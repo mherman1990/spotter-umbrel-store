@@ -12,7 +12,7 @@ services:
 
   web:
     # The release workflow fills in the image digest (scripts/bump-store.mjs).
-    image: ghcr.io/mherman1990/gleaner:0.1.2@sha256:942b8f06d966f8e0304a677b5beb8c9396f4de3dcdf82e01b86238c70da27a47
+    image: ghcr.io/mherman1990/gleaner:0.1.4@sha256:f21d3f5756c8206f9cf7e7fecc3e5a7dcac2e3705743f33670deccc0fb63363c
     user: "1000:1000"
     init: true
     restart: on-failure
