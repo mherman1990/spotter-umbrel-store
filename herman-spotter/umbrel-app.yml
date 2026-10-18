@@ -4,7 +4,7 @@ name: Spotter
 tagline: Strength training log and coach that lives on your Umbrel
 icon: https://raw.githubusercontent.com/mherman1990/spotter-umbrel-store/main/herman-spotter/icon.svg
 category: health
-version: "0.12.0"
+version: "0.13.0"
 port: 3417
 description: >-
   Spotter is a self-hosted strength-training tracker with an AI coach.
@@ -68,12 +68,15 @@ backupIgnore:
   - data/exports/*
   - data/media/tmp/*
 releaseNotes: >-
-  Your exercises: a new list of every lift you've logged (More → Your
-  exercises, or the link at the top of Progress) with search, sorting, how
-  often and when you last did it, and how its estimated 1RM has changed since
-  the first time. Open one to see the change over time: first-to-latest
-  numbers, a chart you can switch between estimated 1RM, heaviest set,
-  volume and reps over 3 months, 6 months, a year or everything, and every
-  session compared with the one before it.
+  Under every exercise there is now a collapsible "How to do it": a short
+  description (level, type, muscles, equipment) and the written steps and
+  cues. The weight buttons can step by half a pound (or kilo), a step you
+  pick is remembered for that exercise, and you can switch between lb and kg
+  in the middle of a workout: the next set starts from the last one
+  converted, every set keeps the unit it was logged in, and a logged set can
+  be corrected to the other unit. Also fixed: swap suggestions now include
+  the same lift with other equipment (a barbell bench press offers the
+  dumbbell, machine and banded versions), and the sets and reps boxes in the
+  Program editor can be cleared and retyped on a phone.
 submitter: Matt Herman
 submission: https://github.com/mherman1990/spotter
