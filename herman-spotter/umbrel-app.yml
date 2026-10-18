@@ -4,7 +4,7 @@ name: Spotter
 tagline: Strength training log and coach that lives on your Umbrel
 icon: https://raw.githubusercontent.com/mherman1990/spotter-umbrel-store/main/herman-spotter/icon.svg
 category: health
-version: "0.13.0"
+version: "0.13.1"
 port: 3417
 description: >-
   Spotter is a self-hosted strength-training tracker with an AI coach.
@@ -68,7 +68,13 @@ backupIgnore:
   - data/exports/*
   - data/media/tmp/*
 releaseNotes: >-
-  Under every exercise there is now a collapsible "How to do it": a short
+  Ramps in your rides now reach the trainer. Spotter sends each ramp of two
+  minutes or more to intervals.icu as a staircase of one-minute steps, because
+  the sync to Wahoo was riding a ramp as one flat target. The ride in Spotter,
+  and the .zwo/.mrc/.erg downloads, keep the true ramp.
+
+
+  Earlier in 0.13:   Under every exercise there is now a collapsible "How to do it": a short
   description (level, type, muscles, equipment) and the written steps and
   cues. The weight buttons can step by half a pound (or kilo), a step you
   pick is remembered for that exercise, and you can switch between lb and kg
