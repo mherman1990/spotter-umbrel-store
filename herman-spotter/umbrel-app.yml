@@ -4,7 +4,7 @@ name: Spotter
 tagline: Strength training log and coach that lives on your Umbrel
 icon: https://raw.githubusercontent.com/mherman1990/spotter-umbrel-store/main/herman-spotter/icon.svg
 category: health
-version: "0.17.0"
+version: "0.18.0"
 port: 3417
 description: >-
   Spotter is a self-hosted strength-training tracker with an AI coach.
@@ -68,55 +68,9 @@ backupIgnore:
   - data/exports/*
   - data/media/tmp/*
 releaseNotes: >-
-  New navigation. Five tabs now: Today, Calendar, Coach, Progress and More; a
-  workout is started from Today. If a workout is open and you are on another
-  screen, a strip at the top takes you straight back to it. More is grouped
-  into Training, Endurance, Analysis and Settings. The Back button returns you
-  to where you were on the page, and there is a skip link for keyboard use.
-  Every address works as before.
+  Progress and exercise history. An exercise's chart now marks every new best,
+  draws estimated 1RM dashed (it is estimated, not lifted) and joins readings
+  with straight lines instead of a smoothed curve. "Show as table" lists the
+  same readings as text. Up and down arrows use the new icons, and Progress
+  gains a Consistency card: workouts finished in each of the last 12 weeks.
 
-
-  Earlier:   The workout screen is redesigned. Sets are a table: what you have logged
-  (warm-ups marked W and not counted), then the sets still to do with what you
-  lifted last time. The entry panel says which set you are on, and a double
-  tap can no longer log a set twice. Swap, typed sets, form check, history and
-  remove moved into one actions menu on each exercise. The rest timer can go
-  down as well as up and leaves room so it never covers the Log button. After
-  Finish you get a summary (time, sets, volume, personal records) instead of
-  the history page; it works offline.
-
-
-  Earlier:   A new Today screen. The top panel is whatever you should do next: resume an
-  open workout, start the planned session (with its exercises one tap away),
-  today's ride, or what is coming up. Three numbers at most (workouts this
-  week, muscles in target range, riding hours), each only when there is data,
-  a recovery-flag badge when your Health data has a baseline, and the coach's
-  notes and recent PRs only when there is something to show. Logging and
-  training are unchanged.
-
-
-  Earlier:   First step of the interface redesign: a shared design system (colours for
-  actions, rising numbers, records and cautions kept apart; named text sizes;
-  one icon set), dialogs that handle keyboard focus properly, visible focus
-  rings, and reduced-motion support. The More screen has icons. Nothing about
-  how you log or train changes yet; Today and the workout screen come next.
-
-
-  Earlier:   Ramps in your rides now reach the trainer. Spotter sends each ramp of two
-  minutes or more to intervals.icu as a staircase of one-minute steps, because
-  the sync to Wahoo was riding a ramp as one flat target. The ride in Spotter,
-  and the .zwo/.mrc/.erg downloads, keep the true ramp.
-
-
-  Earlier in 0.13:   Under every exercise there is now a collapsible "How to do it": a short
-  description (level, type, muscles, equipment) and the written steps and
-  cues. The weight buttons can step by half a pound (or kilo), a step you
-  pick is remembered for that exercise, and you can switch between lb and kg
-  in the middle of a workout: the next set starts from the last one
-  converted, every set keeps the unit it was logged in, and a logged set can
-  be corrected to the other unit. Also fixed: swap suggestions now include
-  the same lift with other equipment (a barbell bench press offers the
-  dumbbell, machine and banded versions), and the sets and reps boxes in the
-  Program editor can be cleared and retyped on a phone.
-submitter: Matt Herman
-submission: https://github.com/mherman1990/spotter
