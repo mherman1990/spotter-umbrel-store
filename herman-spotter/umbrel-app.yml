@@ -4,7 +4,7 @@ name: Spotter
 tagline: Strength training log and coach that lives on your Umbrel
 icon: https://raw.githubusercontent.com/mherman1990/spotter-umbrel-store/main/herman-spotter/icon.svg
 category: health
-version: "0.14.0"
+version: "0.15.0"
 port: 3417
 description: >-
   Spotter is a self-hosted strength-training tracker with an AI coach.
@@ -68,7 +68,16 @@ backupIgnore:
   - data/exports/*
   - data/media/tmp/*
 releaseNotes: >-
-  First step of the interface redesign: a shared design system (colours for
+  A new Today screen. The top panel is whatever you should do next: resume an
+  open workout, start the planned session (with its exercises one tap away),
+  today's ride, or what is coming up. Three numbers at most (workouts this
+  week, muscles in target range, riding hours), each only when there is data,
+  a recovery-flag badge when your Health data has a baseline, and the coach's
+  notes and recent PRs only when there is something to show. Logging and
+  training are unchanged.
+
+
+  Earlier:   First step of the interface redesign: a shared design system (colours for
   actions, rising numbers, records and cautions kept apart; named text sizes;
   one icon set), dialogs that handle keyboard focus properly, visible focus
   rings, and reduced-motion support. The More screen has icons. Nothing about
