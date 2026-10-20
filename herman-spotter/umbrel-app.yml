@@ -4,7 +4,7 @@ name: Spotter
 tagline: Strength training log and coach that lives on your Umbrel
 icon: https://raw.githubusercontent.com/mherman1990/spotter-umbrel-store/main/herman-spotter/icon.svg
 category: health
-version: "0.15.0"
+version: "0.16.0"
 port: 3417
 description: >-
   Spotter is a self-hosted strength-training tracker with an AI coach.
@@ -68,7 +68,17 @@ backupIgnore:
   - data/exports/*
   - data/media/tmp/*
 releaseNotes: >-
-  A new Today screen. The top panel is whatever you should do next: resume an
+  The workout screen is redesigned. Sets are a table: what you have logged
+  (warm-ups marked W and not counted), then the sets still to do with what you
+  lifted last time. The entry panel says which set you are on, and a double
+  tap can no longer log a set twice. Swap, typed sets, form check, history and
+  remove moved into one actions menu on each exercise. The rest timer can go
+  down as well as up and leaves room so it never covers the Log button. After
+  Finish you get a summary (time, sets, volume, personal records) instead of
+  the history page; it works offline.
+
+
+  Earlier:   A new Today screen. The top panel is whatever you should do next: resume an
   open workout, start the planned session (with its exercises one tap away),
   today's ride, or what is coming up. Three numbers at most (workouts this
   week, muscles in target range, riding hours), each only when there is data,
