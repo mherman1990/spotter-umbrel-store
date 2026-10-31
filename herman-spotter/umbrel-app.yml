@@ -4,7 +4,7 @@ name: Spotter
 tagline: Strength training log and coach that lives on your Umbrel
 icon: https://raw.githubusercontent.com/mherman1990/spotter-umbrel-store/main/herman-spotter/icon.svg
 category: health
-version: "0.20.0"
+version: "0.21.0"
 port: 3417
 description: >-
   Spotter is a self-hosted strength-training tracker with an AI coach.
@@ -68,7 +68,9 @@ backupIgnore:
   - data/exports/*
   - data/media/tmp/*
 releaseNotes: >-
-  Accessibility pass. Every screen, the workout logger and the workout summary
-  are now checked automatically against WCAG 2.2 AA. One link in Progress that
-  relied on colour alone is underlined, and the highlight on a newly logged set
-  is fainter so its text stays readable while it fades. No change to your data.
+  Weights that exist. Each location can now say what it has to load: the bar,
+  the plates (and how many pairs), the dumbbell rack, and the machine or cable
+  stack. Targets, warm-up sets, plate math and back-off sets then land on loads
+  you can actually make. A planned increase never rounds back down to last
+  time's weight; it takes the next load up. Leave it empty and nothing changes.
+  Find it under Settings, Equipment, then a location.
