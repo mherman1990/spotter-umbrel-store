@@ -4,7 +4,7 @@ name: Spotter
 tagline: Strength training log and coach that lives on your Umbrel
 icon: https://raw.githubusercontent.com/mherman1990/spotter-umbrel-store/main/herman-spotter/icon.svg
 category: health
-version: "0.18.0"
+version: "0.19.0"
 port: 3417
 description: >-
   Spotter is a self-hosted strength-training tracker with an AI coach.
@@ -68,9 +68,8 @@ backupIgnore:
   - data/exports/*
   - data/media/tmp/*
 releaseNotes: >-
-  Progress and exercise history. An exercise's chart now marks every new best,
-  draws estimated 1RM dashed (it is estimated, not lifted) and joins readings
-  with straight lines instead of a smoothed curve. "Show as table" lists the
-  same readings as text. Up and down arrows use the new icons, and Progress
-  gains a Consistency card: workouts finished in each of the last 12 weeks.
-
+  Small motion cues. A set you just logged glows briefly in the list, and
+  sheets slide up instead of appearing. If a save has been waiting on the
+  server for a few seconds, a notice says how many changes are saved on the
+  phone and waiting to sync. All motion is off when the phone's reduce-motion
+  setting is on.
