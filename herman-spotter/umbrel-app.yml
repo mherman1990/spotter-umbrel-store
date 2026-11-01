@@ -4,7 +4,7 @@ name: Spotter
 tagline: Strength training log and coach that lives on your Umbrel
 icon: https://raw.githubusercontent.com/mherman1990/spotter-umbrel-store/main/herman-spotter/icon.svg
 category: health
-version: "0.22.0"
+version: "0.23.0"
 port: 3417
 description: >-
   Spotter is a self-hosted strength-training tracker with an AI coach.
@@ -68,13 +68,8 @@ backupIgnore:
   - data/exports/*
   - data/media/tmp/*
 releaseNotes: >-
-  A big batch. Training load puts lifting and riding on one scale (fitness,
-  fatigue, form) and warns when heavy leg work sits next to a hard ride. A
-  weekly check-in per muscle (recovery, pump, joint pain) adds, holds or cuts a
-  set on that muscle's lifts, against volume landmarks. A muscle recovery map
-  shows what is still tired. Exercise pages gain "Form over time" from your
-  tracked clips (estimates). Program blocks can be written, pasted and edited
-  as plain text. A Body screen keeps measurements and private progress photos
-  you can compare side by side. And Claude Desktop or Claude Code can read your
-  training through a read-only link you switch on in Settings; it is off by
-  default.
+  Skins. Settings has a new Appearance picker: Daylight (light grey canvas,
+  white cards, blue for actions) and Dusk (soft charcoal cards, blue for
+  actions), both with bigger numbers, rounder cards and a floating tab bar.
+  Classic (near-black with lime) is still the default. The choice is kept on
+  each phone.

@@ -17,7 +17,7 @@ services:
 
   web:
     # The release workflow fills in the image digest (scripts/bump-store.mjs).
-    image: ghcr.io/mherman1990/spotter:0.22.0@sha256:f9243523dec9c30d271ce7fbffcf39f1302f1db0c90c6050db923852da2f324f
+    image: ghcr.io/mherman1990/spotter:0.23.0@sha256:65f0c4eb6497046affe47be2337b2a4006317b0c8c009556d1425fc6ab91b4cc
     user: "1000:1000"
     init: true
     restart: on-failure
