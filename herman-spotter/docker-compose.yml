@@ -11,11 +11,13 @@ services:
       # /cal/* is the iCal feed: calendar apps can't sign in, so the secret
       # token in its URL is the credential (unknown tokens get 404). /health/*
       # is the Apple Health Shortcut's upload link, protected the same way.
-      PROXY_AUTH_WHITELIST: "/manifest.webmanifest,/icons/*,/cal/*,/health/*"
+      # /mcp/* is the read-only MCP link for Claude Desktop / Claude Code: off
+      # until switched on in Settings, secret token in the path, never writes.
+      PROXY_AUTH_WHITELIST: "/manifest.webmanifest,/icons/*,/cal/*,/health/*,/mcp/*"
 
   web:
     # The release workflow fills in the image digest (scripts/bump-store.mjs).
-    image: ghcr.io/mherman1990/spotter:0.21.0@sha256:b1735c2e2fbf6594d6652f0b948f4cfc9af900d57a34684c23dd59ebb6e33a5c
+    image: ghcr.io/mherman1990/spotter:0.22.0@sha256:f9243523dec9c30d271ce7fbffcf39f1302f1db0c90c6050db923852da2f324f
     user: "1000:1000"
     init: true
     restart: on-failure
