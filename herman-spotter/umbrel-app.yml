@@ -4,7 +4,7 @@ name: Spotter
 tagline: Strength training log and coach that lives on your Umbrel
 icon: https://raw.githubusercontent.com/mherman1990/spotter-umbrel-store/main/herman-spotter/icon.svg
 category: health
-version: "0.23.0"
+version: "0.25.0"
 port: 3417
 description: >-
   Spotter is a self-hosted strength-training tracker with an AI coach.
@@ -68,8 +68,12 @@ backupIgnore:
   - data/exports/*
   - data/media/tmp/*
 releaseNotes: >-
-  Skins. Settings has a new Appearance picker: Daylight (light grey canvas,
-  white cards, blue for actions) and Dusk (soft charcoal cards, blue for
-  actions), both with bigger numbers, rounder cards and a floating tab bar.
-  Classic (near-black with lime) is still the default. The choice is kept on
-  each phone.
+  Build workouts with the coach. Add a single workout to any day of the
+  Calendar by talking it through with the coach, refine it, and it joins the
+  schedule (it leads Today on its day). Adapt a planned session before you
+  start it: tell the coach where you are and what you have, not just swap a
+  lift. Plan a travel week of one to three workouts for the gym you will be in
+  and drop it into a week of your block; the week's own sessions are set aside
+  and can be restored. Weights round to the chosen location's dumbbells and
+  stacks. Also: repeat a finished block in one tap, and each warm-up drill now
+  opens into a few short steps.
