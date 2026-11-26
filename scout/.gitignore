@@ -1,0 +1,25 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+
+# Runtime data. Root-anchored so umbrel-store/herman-scout/data/.gitkeep stays tracked.
+/data/
+*.db
+*.db-wal
+*.db-shm
+
+# Secrets: only names-only *.example files are ever committed.
+.env
+.env.*
+*.env
+!*.env.example
+secrets/
+*.pem
+*.key
+
+# Owner-private content: the real plan and thesis never enter the (public) repo.
+config/position_plan.yaml
+config/thesis/*.md
+!config/thesis/*.example.md

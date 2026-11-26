@@ -1,0 +1,9 @@
+node_modules
+dist
+coverage
+data
+package-lock.json
+CLAUDE.md
+umbrel-store
+test/fixtures
+config/thesis
