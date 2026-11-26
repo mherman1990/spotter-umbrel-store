@@ -1,0 +1,17 @@
+**/node_modules
+dist
+coverage
+data
+.git
+.github
+umbrel-store
+test
+docs
+*.log
+.env
+.env.*
+*.env
+secrets
+config/position_plan.yaml
+config/thesis/*.md
+!config/thesis/*.example.md

@@ -1,0 +1,310 @@
+# Scout coverage configuration (validated by src/config/schema.ts). Secrets NEVER go here: use
+# /data/secrets/scout.env (see scout.env.example). Every value below is a default the owner may tune.
+version: 1
+
+# Relative-performance benchmarks for close/weekly briefs (spec section 4).
+benchmarks: [IWM, XRT]
+
+tickers:
+  - symbol: BBW
+    name: Build-A-Bear Workshop, Inc.
+    cik: '0001113809' # quoted: YAML would otherwise drop the leading zeros
+    exchange: NYSE
+    aliases: [Build-A-Bear, Build A Bear, BBW]
+
+    # Spec section 3 defaults. Every trigger is overridable here per ticker.
+    thresholds:
+      # P1 when >= 2x 20d ATR% OR >= 6% (decision D24); atr_method wilder|sma; below atr_min_bars only abs_pct can fire
+      price_move: { atr_multiple: 2, abs_pct: 6, atr_method: wilder, atr_min_bars: 15 }
+      # P2; P1 when paired with a price trigger. No rule in the first min_minutes_since_open or below min_adv shares ADV20.
+      volume_pace: { multiple: 2.5, min_minutes_since_open: 10, min_adv: 50000 }
+      form4: { sale_usd_min: 250000 } # non-10b5-1 (or unknown) sale strictly above this = P2 (per row OR per filing total)
+      short_interest: { change_pct: 10, dtc_levels: [5, 10] }
+      # single-strike volume >= 5x OI, but only with >= 100 contracts traded and OI >= 10
+      options:
+        {
+          iv30_jump_pct: 20,
+          strike_volume_oi_multiple: 5,
+          strike_min_contracts: 100,
+          strike_min_oi: 10,
+        }
+      # 8-K: spec section 3 says "any 8-K = P1"; the listed items are the ones named in the spec (they get item-specific text).
+      # other_priority defaults to P1 (literal spec); set P2 to send other 8-Ks to the digest (decision F14)
+      eight_k: { p1_items: ['2.02', '5.02', '1.01'], other_priority: P1 }
+      periodic_report: { priority: P2 } # 10-Q / 10-K (decision F14)
+
+    # Q3 FY26 print (spec section 8): release before the open Thu 2026-12-03, call 09:00 ET / 08:00 CT.
+    # Consensus is deliberately null: the owner stores it here the day before (never invented by Scout).
+    earnings:
+      date: '2026-12-03'
+      period_label: Q3 FY26
+      timing: before_open
+      mode_start_ct: '05:00' # earnings mode (30 s EDGAR + IR polling, scorecard preload) starts here
+      post_call_summary_ct: '10:30' # Sonnet post-call summary + plan-impact line; earnings mode ENDS here
+      call_time: '09:00'
+      call_timezone: America/New_York
+      push_deadline_seconds: 240 # fallback: generic 8-K P1 with "Guide: unknown - read the 8-K" after this long
+      extraction_timeout_seconds: 150 # hard bound on the Opus extraction call
+      guidance_epsilon_pct: 0.5 # guide moves smaller than this % of the prior midpoint count as "held"
+      fold_press_release_hours: 6 # a press release this soon after the claimed 2.02 8-K folds into the scorecard push
+      consensus:
+        revenue: null # USD millions
+        eps: null # USD per share
+      prior_guidance: [] # optional seed for "guide raised/held/cut" when the DB has no history yet
+
+    news:
+      # Company IR / press-release feeds are the PRIMARY text source (decision D28).
+      # TODO(owner): find BBW's investor-relations RSS URL, put its host in egress.allowed_hosts, set
+      # enabled: true. Left disabled with a non-resolving placeholder so nothing is guessed.
+      ir_feeds:
+        - id: bbw-ir-press-releases
+          url: https://todo-set-ir-rss-url.invalid/rss/press-releases.xml
+          primary: true
+          enabled: false
+          note: 'TODO(owner): replace with the real IR press-release RSS URL, then enable.'
+      extra_feeds: []
+      # Google News RSS is SECONDARY and is deduped against the primary release it rewrites.
+      google_news_query: '"Build-A-Bear Workshop" OR "NYSE:BBW"'
+      guidance_keywords: [guidance, outlook, raises, raised, lowers, lowered, reaffirm, withdraws]
+      dividend_keywords: [dividend, repurchase, buyback, share repurchase]
+      dedupe: { window_hours: 48, jaccard_threshold: 0.6 }
+
+    # Optional 13F watch-list: institutions whose holdings of BBW are diffed (low priority, off by default).
+    institutions: []
+
+# Default polling cadence (spec sections 2 and 8); tickers may override pieces under `polling:`.
+polling:
+  edgar_seconds: 120 # market hours
+  edgar_earnings_seconds: 30 # earnings mode
+  edgar_offhours_seconds: 900
+  ir_seconds: 120
+  ir_earnings_seconds: 30 # IR feeds in earnings mode (spec section 8)
+  halts_seconds: 30
+  options_minutes: 30
+  positions_minutes: 15
+  news_minutes: 10
+  finra_hours: 6
+  fred_hours: 6
+
+# America/Chicago. Cron weekday ranges alone are wrong on holidays; the scheduler also consults the NYSE calendar.
+# The brief jobs run ~5 minutes BEFORE Mayer's OpenClaw crons (06:45, 11:30, 15:15, Sat 08:00): they materialize
+# the payload (kv `brief:`) that /brief/<type> then serves, so Mayer never reads a half-built or drained payload.
+schedules:
+  timezone: America/Chicago
+  premarket: { cron: '40 6 * * 1-5', enabled: true }
+  open_snapshot: { cron: '35 8 * * 1-5', enabled: true }
+  midday: { cron: '25 11 * * 1-5', enabled: true }
+  close: { cron: '10 15 * * 1-5', enabled: true }
+  close_early: { cron: '10 12 * * 1-5', enabled: true } # runs INSTEAD of `close` on early-close days (13:00 ET)
+  weekly: { cron: '50 7 * * 6', enabled: true }
+  health: { cron: '*/15 * * * *', enabled: true }
+  retention: { cron: '30 3 * * *', enabled: true }
+  backup: { cron: '0 3 * * *', enabled: true }
+  token_check: { cron: '7 * * * *', enabled: true }
+  daily_bars: { cron: '30 16 * * 1-5', enabled: true }
+  earnings_tick: { cron: '* * * * *', enabled: true } # preload 05:00 CT, post-call summary 10:30 CT (idempotent)
+  quotes_snapshot: { cron: '* * * * *', enabled: true } # persists latest quotes; 60 s in RTH, every 15 min otherwise
+  profile: { cron: '0 18 * * 5', enabled: true } # weekly intraday-volume-profile learning
+
+notify:
+  openclaw:
+    enabled: true
+    # 127.0.0.1 would be the container itself (decision D16). OPENCLAW_HOOK_URL in scout.env overrides this.
+    url: http://host.docker.internal:18789/hooks/scout
+    mode: compose # compose: Mayer writes the so-what | relay: Scout's finished text is relayed verbatim
+    model: null # per-hook cheap model reference, if the gateway honors one
+    channel: telegram
+    to: null # Telegram chat id, needed for direct /hooks/agent delivery
+    hook_name: scout
+    agent_url: null # null = <hook origin>/hooks/agent
+    earnings_model: null # Opus-class override for the earnings-day /hooks/agent call
+    timeout_seconds: 15
+  ntfy:
+    enabled: true
+    url: https://ntfy.sh # NTFY_URL / NTFY_TOPIC in scout.env override
+    topic: null
+  quiet_hours:
+    start: '21:00'
+    end: '06:30'
+    timezone: America/Chicago
+    exceptions: [8k_item_2_02, halt]
+  p1_cap: 6
+  p1_cap_exempt: [8k_item_2_02, halt] # these P1 pushes do not count toward p1_cap (own counters); remove halt to cap halts
+  halt_fold_minutes: 10 # a second halt for the same ticker inside this window folds into the first halt push
+  p2_cluster: { count: 3, window_minutes: 30 }
+  outbox: { max_attempts: 8, retry_base_seconds: 30, retry_max_seconds: 900, lease_seconds: 120 }
+
+# Event pipeline policy. A rules-P1 is never held back by the LLM (decision F17).
+pipeline:
+  triage_deadline_seconds: 20 # rules-P1 / halt / 2.02 events proceed as triage 'skipped' after this long
+  triage_max_attempts: 5 # non-P1 events are dropped as 'unprocessable' after this many failed triages (a P1 never is)
+  retry_base_seconds: 30
+  retry_max_seconds: 900
+  max_event_age_hours: 48 # non-baseline events older than this at ingest are stored as dropped/stale (outage catch-up)
+
+briefs:
+  writer: mayer # Mayer (OpenClaw cron) writes prose from /brief/<type>; 'scout' = Sonnet in-process
+  fallback_when_gateway_down: true
+  futures_symbols: ['/ES'] # UNVERIFIED: Schwab futures symbology (docs/VERIFY_LIVE.md); missing -> dataQuality note
+  futures_fallback_symbols: [SPY, IWM] # quoted pre-market when no futures symbol can be quoted
+
+llm:
+  enabled: true
+  models:
+    triage:
+      id: claude-haiku-5-5
+      effort: low
+      max_tokens: 1024
+      server_fallbacks: false # Haiku 5.5 has no server-side refusal fallback
+      price:
+        input_per_mtok: 0.10
+        output_per_mtok: 0.50
+        cache_read_per_mtok: 0.01 # UNVERIFIED: assumed 0.1x input; confirm from the first live llm_calls rows
+        cache_write_multiplier: 1.25
+        cache_write_1h_multiplier: 2
+        batch_discount: 0.5
+        long_context:
+          {
+            threshold_tokens: 100000,
+            input_per_mtok: 0.50,
+            output_per_mtok: 2.50,
+            cache_read_per_mtok: 0.05,
+          }
+    synth:
+      id: claude-sonnet-5-5
+      effort: medium
+      max_tokens: 4096
+      server_fallbacks: true
+      price:
+        input_per_mtok: 2
+        output_per_mtok: 10
+        cache_read_per_mtok: 0.10
+        cache_write_multiplier: 1.25
+        cache_write_1h_multiplier: 2
+        batch_discount: 0.5
+        long_context: null
+    deep:
+      id: claude-opus-5-5
+      effort: high
+      max_tokens: 16000
+      server_fallbacks: true
+      price:
+        input_per_mtok: 4
+        output_per_mtok: 20
+        cache_read_per_mtok: 0.20
+        cache_write_multiplier: 1.25
+        cache_write_1h_multiplier: 2
+        batch_discount: 0.5
+        long_context: null
+  fallbacks: true # server-side refusal fallbacks for Sonnet/Opus (beta server-side-fallback-2026-07-01)
+  cache_ttl: 5m
+  spend_cap_usd_daily: 5
+  spend_cap_usd_monthly: 50
+  spend_cap_action: downgrade
+  use_batch_for_weekly: true
+  batch_max_wait_minutes: 120
+
+api:
+  port: 3817
+  # 0.0.0.0 INSIDE the container so Umbrel's app proxy and Mayer (same Docker network) can reach it.
+  # Never exposed through Tailscale Funnel; Umbrel login stays on (decision D19).
+  bind: 0.0.0.0
+
+# EVERY host Scout may contact (decision D8). Anything else throws before a connection is attempted.
+egress:
+  allowed_hosts:
+    - data.sec.gov # EDGAR submissions JSON
+    - www.sec.gov # EDGAR archives (filing documents, indexes)
+    - api.schwabapi.com # Schwab OAuth + market data + account read
+    - api.finra.org # FINRA Query API (UNVERIFIED)
+    - ews.fip.finra.org # FINRA OAuth token (UNVERIFIED)
+    - cdn.finra.org # Reg SHO daily files / short-interest files (UNVERIFIED)
+    - api.stlouisfed.org # FRED
+    - api.anthropic.com # Anthropic API (via the SDK with a guarded fetch)
+    - www.nasdaqtrader.com # trade-halts RSS (UNVERIFIED)
+    - news.google.com # Google News RSS (secondary news)
+    - ntfy.sh # fallback notifier (change if self-hosted)
+    - host.docker.internal # OpenClaw gateway on the Docker host (plain http, :18789 via the URL below, see http_allowed_hosts)
+    # TODO(owner): add the company IR feed host here when you enable it in tickers[].news.ir_feeds.
+    # The Schwab streamer wss host is learned at runtime and matched by suffix below.
+    # IMAP (optional newsletter inbox) is not HTTP; the inbox adapter checks IMAP_HOST against this list too.
+  http_allowed_hosts:
+    - host.docker.internal
+  ws_allowed_host_suffixes: ['.schwab.com', '.schwabapi.com']
+  # Requests per second per host or rate group, merged over the built-in defaults (sec: 5, api.schwabapi.com: 2).
+  rates: {}
+
+retention:
+  raw_payload_days: 90
+  job_runs_days: 90
+  intraday_bars_days: 90
+
+storage:
+  data_dir: /data
+  db_file: scout.db
+  secrets_file: secrets/scout.env
+  plan_file: position_plan.yaml # owner-private; copy config/position_plan.example.yaml and fill it in
+  thesis_dir: thesis
+  backups_dir: backups
+  backup_keep: 7
+
+health:
+  adapter_stale_factor: 5
+  quote_stale_seconds: 180
+  alert_cooldown_hours: 6
+  send_recovery: true
+
+# Token reminders are FIXED at T-24h, T-6h and expiry (decision D12): there is no reminder_hours key.
+schwab:
+  enabled: true
+  base_url: https://api.schwabapi.com
+  options_chain: { strike_count: 20, max_days_to_expiration: 60 }
+  stream: { enabled: true, stale_trade_minutes: 5, stale_trade_priority: P2 }
+
+edgar:
+  data_base_url: https://data.sec.gov
+  archive_base_url: https://www.sec.gov
+  backfill_count: 40
+  form4_enabled: true
+  schedule13_enabled: true
+  f13_enabled: false
+
+finra:
+  short_interest:
+    enabled: true
+    source: public_file # query_api needs FINRA_CLIENT_ID/SECRET in scout.env (UNVERIFIED, decision D25)
+    public_file_url_template: 'https://cdn.finra.org/equity/otcmarket/biweekly/shrt{YYYYMMDD}.csv'
+    dataset_group: otcMarket
+    dataset_name: consolidatedShortInterest
+    publish_lag_business_days: 7
+    cadence_days: 15
+  reg_sho:
+    enabled: true
+    url_template: 'https://cdn.finra.org/equity/regsho/daily/CNMSshvol{YYYYMMDD}.txt'
+
+# FRED series are CONTEXT for briefs only; macro events never push (decision D26). Needs FRED_API_KEY.
+fred:
+  enabled: true
+  base_url: https://api.stlouisfed.org/fred
+  series:
+    - { id: UMCSENT, title: University of Michigan consumer sentiment }
+    - { id: RSAFS, title: Advance retail sales - retail trade and food services }
+    - { id: RSXFS, title: Advance retail sales - retail trade }
+    - id: RSGCS
+      title: Advance retail sales - general merchandise stores
+      enabled: false
+      note: 'TODO(owner): confirm this series id on fred.stlouisfed.org, then enable.'
+    - id: RSSGHBMS
+      title: Advance retail sales - sporting goods, hobby, musical instrument and book stores
+      enabled: false
+      note: 'TODO(owner): confirm this series id on fred.stlouisfed.org, then enable.'
+
+halts:
+  nasdaq_trader:
+    enabled: true
+    url: https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts # UNVERIFIED feed URL/format (decision D14)
+
+inbox:
+  enabled: false # optional newsletter intake; IMAP creds go in scout.env (decision D27)
+  mailbox: INBOX
+  max_messages_per_run: 50

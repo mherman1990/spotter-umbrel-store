@@ -1,0 +1,19 @@
+# Position plan TEMPLATE (spec section 5). Copy to /data/position_plan.yaml (owner-private, git-ignored) and
+# fill it in. Scout reports against this file and NEVER edits it. Unfilled "<...>" placeholders load as "unset"
+# (reported by /plan and the briefs), they never crash anything.
+BBW:
+  thesis_file: BBW.md # resolved inside storage.thesis_dir (/data/thesis); no absolute paths, no '..'
+  max_position_pct_of_liquid_net_worth: '<manual: percent>'
+  target_shares: '<manual: number of shares>'
+  tranches:
+    - { label: starter, pct_of_target: 33, condition: '<price or event>' }
+    - { label: add_1, pct_of_target: 33, condition: '<e.g. after Q3 print if guide holds>' }
+    - { label: add_2, pct_of_target: 34, condition: '<e.g. Q4 holiday read confirms>' }
+  thesis_breakers: # any hit = P1 "review thesis" push. Scout evaluates the ones it recognizes (guidance cuts,
+    # dividend cut/suspension, buyback suspension, revolver draw); any other text is reported "unknown", never "hit".
+    - third FY guidance cut
+    - dividend cut or buyback suspension
+    - revolver draw to fund buybacks/dividend
+    - '<add your own>'
+  price_levels: { review_below: '<manual: price>', trim_above: '<manual: price>' }
+  earnings_rule: '<e.g. no adds within 3 sessions before a print>'
